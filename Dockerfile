@@ -1,6 +1,9 @@
 # Usar a imagem oficial do Python
 FROM python:3.9-slim
 
+# Install PostgreSQL client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Definir o diretório de trabalho dentro do contêiner
 WORKDIR /app
 

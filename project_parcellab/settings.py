@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure--eod1agfrd^sn&zincohhy-8hm4o68ww2msvy9fy6q&(7n6*y)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'articles',
+    'shipments',
+    'weather',
+    'rest_framework',
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
@@ -48,6 +55,22 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated', 
+    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Permite acesso a todos sem autenticação
+    ],
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ALLOWED_VERSIONS': ['v1', 'v2'],  
+    'VERSION_PARAM': 'version',
+}
 
 ROOT_URLCONF = 'project_parcellab.urls'
 
@@ -75,14 +98,30 @@ WSGI_APPLICATION = 'project_parcellab.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DATABASE_NAME', 'postgres'),
-        'USER': os.environ.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DATABASE_HOST', 'db'),
-        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DATABASE_NAME', 'customdatabase'),
+        'USER': os.getenv('DATABASE_USER', 'customuser'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'custompassword'),
+        'HOST': os.getenv('DATABASE_HOST', 'pg-0'),  # Para gravações, usa o db_primary
+        'PORT': os.getenv('DATABASE_PORT', 5050),
+        'OPTIONS': {
+            'options': '-c search_path=public',
+        },
+    },
+    'replica': {  # Conexão para leitura
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DATABASE_NAME', 'customdatabase'),
+        'USER': os.getenv('DATABASE_USER', 'customuser'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'custompassword'),
+        'HOST': 'pg-1',  # Usamos db_replica para leitura
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=public',
+        },
     }
 }
+
+DATABASE_ROUTERS = ['project_parcellab.db_router.DatabaseRouter']  
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -126,3 +165,56 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+OPENWEATHER_API_KEY = 'b937fbebbb425c33bd583d944d38d5da'  # Add your OpenWeatherMap API key here
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        '': {  # root logger
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'locker': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'bloq': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # Adicione outros loggers conforme necessário
+    },
+}
+
+if 'test' in sys.argv:
+    DATABASES['default']['HOST'] = 'pg-0'
+    DATABASES['replica']['HOST'] = 'pg-0'
+    DATABASE_ROUTERS = ['project_parcellab.test_db_router.DatabaseRouter']  
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['file']
