@@ -83,5 +83,4 @@ class WeatherDetailTests(APITestCase):
         invalid_url = reverse('weather-detail', kwargs={'version': 'v1', 'country_code': 'US', 'zip_code': 'invalid_zip'})
         response = self.client.get(invalid_url)
 
-        # Assuming the service would return a 404 for this case.
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

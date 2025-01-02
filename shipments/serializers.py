@@ -4,9 +4,9 @@ The ShipmentSerializer class is a subclass of serializers.ModelSerializer.
 The ShipmentSerializer class defines the fields to be serialized.
 '''
 from rest_framework import serializers
+from articles.models import Article
 from articles.serializers import ArticleSerializer
 from .models import Shipment
-from articles.models import Article  # Import Article model
 
 
 class ShipmentSerializer(serializers.ModelSerializer):

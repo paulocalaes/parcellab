@@ -64,7 +64,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.IsAuthenticated', 
     # ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # Permite acesso a todos sem autenticação
+        'rest_framework.permissions.AllowAny', 
     ],
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_VERSION': 'v1',
@@ -102,18 +102,18 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME', 'customdatabase'),
         'USER': os.getenv('DATABASE_USER', 'customuser'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'custompassword'),
-        'HOST': os.getenv('DATABASE_HOST', 'pg-0'),  # Para gravações, usa o db_primary
+        'HOST': os.getenv('DATABASE_HOST', 'pg-0'),  
         'PORT': os.getenv('DATABASE_PORT', 5050),
         'OPTIONS': {
             'options': '-c search_path=public',
         },
     },
-    'replica': {  # Conexão para leitura
+    'replica': {  
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('DATABASE_NAME', 'customdatabase'),
         'USER': os.getenv('DATABASE_USER', 'customuser'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'custompassword'),
-        'HOST': 'pg-1',  # Usamos db_replica para leitura
+        'HOST': 'pg-1',  
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=public',
@@ -198,17 +198,21 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
-        'locker': {
+        'shipments': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
-        'bloq': {
+        'articles': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
-        # Adicione outros loggers conforme necessário
+        'weather': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 

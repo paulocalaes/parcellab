@@ -44,8 +44,8 @@ urlpatterns = [
         path('weather/', include('weather.urls')),
         path('articles/', include('articles.urls')),
 
-        path('auth/', include('djoser.urls')),  
-        path('auth/', include('djoser.urls.authtoken')),
+        # path('auth/', include('djoser.urls')),  
+        # path('auth/', include('djoser.urls.authtoken')),
     ])),  
 
     # Rotas do Swagger
