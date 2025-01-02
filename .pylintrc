@@ -1,3 +1,4 @@
 [MASTER]
 ignore=tests.py, urls.py, migrations
 ignored-argument-names=arg|args|kwargs
+ignore-patterns=test_.*?py, tests_.*?py

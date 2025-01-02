@@ -63,7 +63,7 @@ class WeatherService:
                 zip_code=zip_code, country_code=country_code).first()
             # If weather data is available and fetched under 2 hours, return it
             if weather and weather.last_fetched > datetime.now() - timedelta(hours=2):
-                
+
                 # Cache the data in Redis for 2 hours
                 self.r.setex(f'weather:{zip_code}, {country_code}',
                              7200, f"{weather.temperature},{weather.condition}")
@@ -145,7 +145,7 @@ class WeatherService:
         weather = self.get_weather_api(zip_code, country_code)
         if weather:
             return weather
-        
+
         logger.error(
             "Unable to fetch weather data for zip_code=%s, country_code=%s", zip_code, country_code)
         return None

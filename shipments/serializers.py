@@ -17,6 +17,9 @@ class ShipmentSerializer(serializers.ModelSerializer):
     articles = ArticleSerializer(many=True)
 
     class Meta:
+        '''
+        The Meta class defines the model and fields to be serialized.
+        '''
         model = Shipment
         fields = ['tracking_number', 'carrier', 'sender_address', 'receiver_address',
                   'receiver_zip_code', 'receiver_country_code', 'status', 'articles']
@@ -54,7 +57,6 @@ class ShipmentSerializer(serializers.ModelSerializer):
         if articles_data:
             # Handle updating the related articles
             for article_data in articles_data:
-                # Check if we are updating or creating articles here (this is simplified, consider checking if the article already exists)
                 article = article_data.get('id')
                 if article:
                     article_instance = Article.objects.get(id=article)
@@ -67,4 +69,3 @@ class ShipmentSerializer(serializers.ModelSerializer):
                     Article.objects.create(**article_data)
 
         return instance
-
